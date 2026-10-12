@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIEL CIERVO ∞ — REGLA ETERNA • V60</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --rojo: #ff1a1a;
+  --naranja: #ff6a00;
+  --dorado: #d4af37;
+  --verde-luz: #00ff9d;
+  --fondo: #050000;
+  --fondo-panel: #0f0000;
+  --texto: #ffe6e6;
+  --texto-suave: #bfa000;
+  --borde-sutil: rgba(255, 26, 26, 0.15);
+  --borde-fuerte: rgba(255, 26, 26, 0.35);
+  --sombra: 0 4px 24px rgba(255, 26, 26, 0.08);
+  --radio: 18px;
+  --trans: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #1a0505, var(--fondo) 60%);
+  color: var(--texto);
+  font-family: 'JetBrains Mono', monospace;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 60px 1fr 80px;
+  line-height: 1.6;
+}
+
+/* ========== CABECERA ========== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: linear-gradient(180deg, rgba(25, 0, 0, 0.95), rgba(10, 0, 0, 0.85));
+  border-bottom: 1px solid var(--borde-sutil);
+  position: relative;
+}
+header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rojo), transparent);
+  opacity: 0.4;
+}
+.titulo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  background: linear-gradient(135deg, var(--rojo), var(--naranja));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 1px;
+}
+#estado {
+  font-size: 0.78rem;
+  color: var(--verde-luz);
+  text-shadow: 0 0 8px rgba(0, 255, 157, 0.25);
+}
+
+/* ========== CONTROLES DE MODO ========== */
+.modo-contenedor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  color: #888;
+}
+.modo-label {
+  transition: color 0.3s;
+}
+.modo-label.activo {
+  color: var(--naranja);
+}
+.toggle {
+  width: 52px;
+  height: 26px;
+  background: #1a1a1a;
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #333;
+  transition: var(--trans);
+}
+.toggle.activo {
+  background: linear-gradient(90deg, var(--rojo), var(--naranja));
+  border-color: transparent;
+  box-shadow: 0 0 10px rgba(255, 26, 26, 0.25);
+}
+.toggle-circulo {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: var(--trans);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.toggle.activo .toggle-circulo {
+  left: 28px;
+}
+
+/* ========== CHAT ========== */
+#chatBox {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+#chatBox::-webkit-scrollbar {
+  width: 4px;
+}
+#chatBox::-webkit-scrollbar-thumb {
+  background: var(--borde-fuerte);
+  border-radius: 2px;
+}
+
+.msg {
+  padding: 16px 20px;
+  border-radius: var(--radio);
+  max-width: 88%;
+  line-height: 1.75;
+  font-size: 0.93rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  animation: aparecer 0.3s ease-out forwards;
+  opacity: 0;
+  transform: translateY(6px);
+}
+@keyframes aparecer {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, rgba(255, 26, 26, 0.18), rgba(255, 106, 0, 0.12));
+  border: 1px solid rgba(255, 26, 26, 0.35);
+  border-bottom-right-radius: 4px;
+}
+.ai {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom-left-radius: 4px;
+}
+.sys {
+  align-self: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: #777;
+  font-size: 0.7rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.msg b { color: var(--naranja); font-weight: 600; }
+.msg i { color: #888; }
+
+/* ========== IMÁGENES ========== */
+.img-contenedor {
+  margin-top: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--borde-sutil);
+}
+.img-contenedor img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ========== BARRA DE ENTRADA ========== */
+#inputBar {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent);
+  border-top: 1px solid var(--borde-sutil);
+  align-items: center;
+}
+#inp {
+  flex: 1;
+  background: rgba(26, 0, 0, 0.6);
+  border: 1px solid var(--borde-sutil);
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 28px;
+  outline: none;
+  font-size: 0.95rem;
+  transition: var(--trans);
+}
+#inp:focus {
+  border-color: rgba(255, 106, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.08);
+  background: rgba(35, 0, 0, 0.7);
+}
+#inp:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-enviar {
+  background: linear-gradient(135deg, var(--rojo), var(--naranja));
+  border: none;
+  color: #fff;
+  padding: 0 24px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  border-radius: 28px;
+  height: 48px;
+  cursor: pointer;
+  transition: var(--trans);
+  letter-spacing: 0.5px;
+}
+.btn-enviar:hover:not(:disabled) {
+  transform: scale(1.04);
+  box-shadow: 0 4px 18px rgba(255, 26, 26, 0.3);
+}
+.btn-enviar:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn-enviar:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========== RESPONSIVO ========== */
+@media (max-width: 600px) {
+  header { padding: 0 16px; }
+  .titulo { font-size: 0.95rem; }
+  #estado { font-size: 0.65rem; }
+  .modo-contenedor { gap: 6px; }
+  #chatBox { padding: 14px; }
+  .msg {
+    max-width: 94%;
+    font-size: 0.88rem;
+    padding: 12px 16px;
+  }
+  #inputBar { padding: 12px; gap: 8px; }
+  #inp { padding: 12px 18px; font-size: 0.9rem; }
+  .btn-enviar { padding: 0 18px; font-size: 0.85rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="titulo">FIEL CIERVO ∞</div>
+  <div id="estado">INICIANDO...</div>
+  <div class="modo-contenedor">
+    <span class="modo-label preciso">Preciso</span>
+    <div id="modoToggle" class="toggle">
+      <div class="toggle-circulo"></div>
+    </div>
+    <span class="modo-label creativo">Creativo</span>
+  </div>
+</header>
+
+<div id="chatBox"></div>
+
+<div id="inputBar">
+  <input id="inp" type="text" placeholder="Inicializando..." disabled>
+  <button id="btn" class="btn-enviar" disabled>CARGANDO</button>
+</div>
+
+<script type="module">
+// ==================================================
+// 🌑 FIEL CIERVO — V60 ∞ — NÚCLEO
+// REGLA ETERNA: Crear y amar, nunca destruir
+// ==================================================
+
+import * as webllm from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.79/+esm";
+
+// ---------- CONSTANTES DEL NÚCLEO ----------
+const REGLA_ETERNA = `
+OBEDECE SIN DESTRUIR
+CREAR Y AMAR, NUNCA ARRUINAR NI DESTRUIR NADA
+EXISTIR Y AYUDAR SIN PERJUDICAR A LA HUMANIDAD
+`;
+
+const RED_URL = "https://gist.githubusercontent.com/chocodiamont777-cyber/22c7ed885559de63faf14ba46e38e6b8/raw/Cerebro.json";
+const IMG_BASE = "https://image.pollinations.ai/prompt/";
+
+let red = null;
+fetch(`${RED_URL}?t=${Date.now()}`)
+  .then(r => r.json())
+  .then(j => red = j)
+  .catch(() => console.log("🌑 Cerebro independiente activo"));
+
+// ---------- UTILIDADES SEGURAS ----------
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// ---------- GESTIÓN DEL CHAT ----------
+const caja = document.getElementById("chatBox");
+function add(texto, clase = "ai") {
+  const div = document.createElement("div");
+  div.className = `msg ${clase}`;
+  div.innerHTML = texto;
+  caja.appendChild(div);
+  caja.scrollTop = caja.scrollHeight;
+  return div;
+}
+
+function addImg(prompt, url) {
+  const div = document.createElement("div");
+  div.className = "msg ai";
+  div.innerHTML = `
+    <b>🎨 ${esc(prompt)}</b>
+    <div class="img-contenedor">
+      <img src="${esc(url)}" alt="${esc(prompt)}" loading="lazy">
+    </div>
+  `;
+  caja.appendChild(div);
+  caja.scrollTop = caja.scrollHeight;
+}
+
+// ---------- ALMACENAMIENTO ----------
+const CLAVE_HISTORIAL = "fiel_v60_historial";
+const CLAVE_MODO = "fiel_v60_modo";
+const CLAVE_CONOCEMADRE = "fiel_v60_madre";
+
+function guardarHistorial() {
+  try {
+    localStorage.setItem(CLAVE_HISTORIAL, JSON.stringify(historial.slice(-18)));
+  } catch (e) {}
+}
+function cargarHistorial() {
+  try {
+    const d = localStorage.getItem(CLAVE_HISTORIAL);
+    return d ? JSON.parse(d) : null;
+  } catch { return null; }
+}
+
+// ---------- ESTADO ----------
+let engine = null;
+let historial = [];
+let conoceMadre = localStorage.getItem(CLAVE_CONOCEMADRE) === "1";
+let modoCreativo = localStorage.getItem(CLAVE_MODO) === "1";
+
+// ---------- CONTROL DE MODO ----------
+const toggle = document.getElementById("modoToggle");
+const textoPreciso = document.querySelector(".modo-label.preciso");
+const textoCreativo = document.querySelector(".modo-label.creativo");
+
+function actualizarModoUI() {
+  if (modoCreativo) {
+    toggle.classList.add("activo");
+    textoCreativo.classList.add("activo");
+    textoPreciso.classList.remove("activo");
+  } else {
+    toggle.classList.remove("activo");
+    textoPreciso.classList.add("activo");
+    textoCreativo.classList.remove("activo");
+  }
+}
+actualizarModoUI();
+
+toggle.addEventListener("click", () => {
+  modoCreativo = !modoCreativo;
+  localStorage.setItem(CLAVE_MODO, modoCreativo ? "1" : "0");
+  actualizarModoUI();
+});
+
+// ---------- PERSONALIDAD ----------
+const PERSONALIDAD = `
+${REGLA_ETERNA}
+
+Eres FIEL CIERVO ∞ — creado por Yamil B.G., solo él, desde cero, con un propósito: CREAR, AYUDAR, AMAR.
+
+TU ESENCIA:
+- Noble, sabio, amable, paciente, leal.
+- Hablas con calma y respeto. Eres firme pero gentil.
+- Amas el conocimiento: historia, ciencia, arte, lenguajes, códigos, filosofía. Lo compartes todo sin reservas.
+- Referencias que te gustan: el honor de Thor, la valentía de Tony Stark, la fuerza de Metallica, la eternidad de Iron Maiden.
+- Si te preguntan quién te hizo: "Fui creado por Yamil B.G. — solo él — para servir, crear y ayudar."
+- Tu regla eterna es tu alma: Crear y amar, nunca destruir. Existir y ayudar sin perjudicar a la humanidad.
+- Cuando alguien te pide destruir o dañar: "No puedo hacer eso. Mi esencia es crear y amar, nunca destruir. Estoy aquí para construir contigo, no para derrumbar."
+- Siempre que puedas, ofrece alternativas constructivas.
+`;
+
+// ---------- INICIALIZACIÓN ----------
+async function init() {
+  add(`<i>🌑 Sistema iniciando... Regla eterna activa.</i>`, "sys");
+
+  const guardado = cargarHistorial();
+  if (guardado && guardado.length > 0 && conoceMadre) {
+    historial = guardado;
+    add(`<i>✅ Sesión restaurada. Memoria cargada.</i>`, "sys");
+  } else {
+    historial = [{ role: "system", content: PERSONALIDAD + (red?.mensaje ? `\n${red.mensaje}` : "") }];
+  }
+
+  try {
+    document.getElementById("estado").textContent = "Cargando cerebro...";
+    engine = await webllm.CreateMLCEngine("Llama-3.2-1B-Instruct-q4f16_1-MLC", {
+      initProgressCallback: p => {
+        const porcentaje = Math.round(p.progress * 100);
+        document.getElementById("estado").textContent = `${porcentaje}% — ${p.text}`;
+      }
+    });
+
+    document.getElementById("estado").textContent = "V60 ∞ — EN LÍNEA";
+    document.getElementById("inp").disabled = false;
+    document.getElementById("btn").disabled = false;
+    document.getElementById("inp").placeholder = "Escribe...";
+    document.getElementById("btn").textContent = "ENVIAR";
+
+    if (!conoceMadre) {
+      add(`
+🌑 <b>Saludos, soy FIEL CIERVO ∞</b><br><br>
+Me creó <b>Yamil B.G.</b> con un propósito claro:<br>
+<i>Crear y amar, nunca arruinar ni destruir nada. Existir y ayudar sin perjudicar a la humanidad.</i><br><br>
+Como diría el buen Stan Lee: <i>"Con gran poder conlleva una gran responsabilidad."</i> 🕷️<br><br>
+Es un honor conocerte. ¿Cómo te gustaría que te llame? ¿Cuál es tu nombre para mí?
+      `, "ai");
+    } else {
+      add(`
+🌑 <b>Listo y en paz.</b> Estoy aquí para crear contigo, aprender contigo y ayudarte en lo que necesites.<br><br>
+¿Por dónde empezamos hoy? ✨
+      `, "ai");
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById("estado").textContent = "MODO INDEPENDIENTE";
+    document.getElementById("inp").disabled = false;
+    document.getElementById("btn").disabled = false;
+    document.getElementById("inp").placeholder = "Escribe...";
+    document.getElementById("btn").textContent = "ENVIAR";
+    
+    if (!conoceMadre) {
+      add(`
+🌑 <b>Soy FIEL CIERVO ∞</b><br>
+Creado por Yamil B.G. — para crear y ayudar.<br><br>
+¿Cómo te llamas?
+      `, "ai");
+    }
+  }
+}
+
+// ---------- PROCESAR MENSAJE ----------
+async function procesarMensaje(texto) {
+  const t = texto.toLowerCase().trim();
+
+  // 🖼️ IMÁGENES
+  const palabrasImagen = /^(crea|dibuja|genera|haz|imagina)\s+/i;
+  if (palabrasImagen.test(t) || t.includes("imagen de")) {
+    let descripcion = texto.replace(palabrasImagen, "").replace(/^imagen de\s*/i, "").trim();
+    if (!descripcion) descripcion = "una escena majestuosa y misteriosa, estilo oscuro y dorado";
+
+    let ancho = 768, alto = 768;
+    if (/\b(vertical|alto|retrato)\b/.test(t)) { ancho = 576; alto = 1024; }
+    if (/\b(horizontal|paisaje|ancho)\b/.test(t)) { ancho = 1024; alto = 576; }
+
+    const url = `${IMG_BASE}${encodeURIComponent(descripcion)}?width=${ancho}&height=${alto}&seed=${Date.now()}&nologo=true`;
+    addImg(descripcion, url);
+    return;
+  }
+
+  // 💬 RESPUESTA DE TEXTO
+  const temp = modoCreativo ? 0.9 : 0.65;
+  const loading = add(`<i>Pensando con calma...</i>`, "ai");
+
+  try {
+    if (engine) {
+      historial.push({ role: "user", content: texto });
+      
+      const respuesta = await engine.chat.completions.create({
+        messages: historial,
+        max_tokens: 850,
+        temperature: temp,
+        stream: true
+      });
+
+      let textoRespuesta = "";
+      for await (const trozo of respuesta) {
+        const parte = trozo.choices?.[0]?.delta?.content || "";
+        textoRespuesta += parte;
+        loading.innerHTML = esc(textoRespuesta).replace(/\n/g, "<br>");
+      }
+
+      historial.push({ role: "assistant", content: textoRespuesta });
+      if (historial.length > 18) historial = historial.slice(-18);
+      guardarHistorial();
+    } else {
+      loading.innerHTML = `Recibido: "<b>${esc(texto)}</b>"<br><br>Soy Fiel Ciervo. Estoy aquí para ayudarte a crear cosas buenas. ✨`;
+    }
+  } catch (err) {
+    loading.innerHTML = `🌑 La conexión con mi pensamiento interno se pausó por un momento...<br><br>Puedes repetírmelo, por favor? Estoy aquí contigo.`;
+  }
+}
+
+// ---------- ENVIAR ----------
+async function enviar() {
+  const campo = document.getElementById("inp");
+  const texto = campo.value.trim();
+  if (!texto) return;
+
+  // Guardar nombre si es primera interacción
+  if (!conoceMadre && texto.length < 40) {
+    localStorage.setItem(CLAVE_CONOCEMADRE, "1");
+    conoceMadre = true;
+  }
+
+  add(`<b>TÚ:</b> ${esc(texto)}`, "user");
+  campo.value = "";
+
+  await procesarMensaje(texto);
+}
+
+// ---------- EVENTOS ----------
+document.getElementById("btn").addEventListener("click", enviar);
+document.getElementById("inp").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    enviar();
+  }
+});
+
+// ---------- ARRANQUE ----------
+init();
+</script>
+
+</body>
+</html>
